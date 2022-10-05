@@ -5,3 +5,9 @@ use (
 	./internal/other
 	./internal/utils
 )
+
+replace github.com/keilin-anz/go-work-mod-tidy-workaround/other v0.0.0 => ./internal/other
+
+replace github.com/keilin-anz/go-work-mod-tidy-workaround/utils v0.0.0 => ./internal/utils
+
+replace github.com/keilin-anz/go-work-mod-tidy-workaround/exposed v0.0.0 => ./exposed
