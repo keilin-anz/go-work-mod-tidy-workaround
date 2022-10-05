@@ -2,8 +2,9 @@ package exposed
 
 import (
 	"fmt"
-	"go-work-mod-tidy-workaround/other"
-	"go-work-mod-tidy-workaround/utils/math"
+
+	"github.com/keilin-anz/go-work-mod-tidy-workaround/other"
+	"github.com/keilin-anz/go-work-mod-tidy-workaround/utils/math"
 )
 
 // Try exposing an internal module func through this public module

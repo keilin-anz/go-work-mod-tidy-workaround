@@ -79,7 +79,20 @@ You may be able to get a more sane use case working, eg. with:
 
 - add `replace` clauses to all of your modules which depend on each other (and *don't forget to update them if you change any imports! :fire:*)
 - cross your fingers that doesn't break `go work sync`
-
+- `EDIT:` Nope - that doesn't seem to work
+  - Fine locally
+  - Breaks on external import (just in a different way):
+    ```
+    go get github.com/keilin-anz/go-work-mod-tidy-workaround/exposed@with-replace-and-url-names
+    go: downloading github.com/keilin-anz/go-work-mod-tidy-workaround/exposed v0.0.0-20221005103718-e629069e8429
+    go: downloading github.com/keilin-anz/go-work-mod-tidy-workaround v0.0.0-20221005103718-e629069e8429
+    go: downloading github.com/keilin-anz/go-work-mod-tidy-workaround/utils v0.0.0-00010101000000-000000000000
+    go: downloading github.com/keilin-anz/go-work-mod-tidy-workaround/other v0.0.0-00010101000000-000000000000
+    github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
+    	github.com/keilin-anz/go-work-mod-tidy-workaround/other: github.com/keilin-anz/go-work-mod-tidy-workaround/other@v0.0.0-00010101000000-000000000000: invalid version: unknown revision 000000000000
+    github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
+    	github.com/keilin-anz/go-work-mod-tidy-workaround/utils/math: github.com/keilin-anz/go-work-mod-tidy-workaround/utils@v0.0.0-00010101000000-000000000000: invalid version: unknown revision 000000000000
+    ```
 
 ### Opinion
 
