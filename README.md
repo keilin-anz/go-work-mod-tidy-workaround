@@ -16,10 +16,18 @@ The hope was to find an adequate workaround pattern, but I have not.  However th
     - [Use cases included here](#use-cases-included-here)
   - [Conclusion](#conclusion)
     - [What else?](#what-else)
+      - [Alternative approaches](#alternative-approaches)
+  - [Other branches (alternatives](#other-branches-alternatives)
     - [Opinion](#opinion)
 # TLDR
 
-Go Workspaces are not an adequate replacement for `go mod edit -replace`, and they don't even seem to play well together
+Go Workspaces are not an adequate replacement for `go mod edit -replace`, and they don't even seem to play well together.
+
+`go mod tidy` will not behave properly for modules which have dependencies on other modules within the same workspace (it will attempt to download the latest published copy instead)
+
+You can work around `go mod tidy`'s promsicuous downloading behaviour by using invalid URLs as module names, but that brings caveats (see rest of this document)
+
+See more in [Conclusion](#conclusion)
 
 ## My requirements
 
@@ -92,6 +100,37 @@ You may be able to get a more sane use case working, eg. with:
     	github.com/keilin-anz/go-work-mod-tidy-workaround/other: github.com/keilin-anz/go-work-mod-tidy-workaround/other@v0.0.0-00010101000000-000000000000: invalid version: unknown revision 000000000000
     github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
     	github.com/keilin-anz/go-work-mod-tidy-workaround/utils/math: github.com/keilin-anz/go-work-mod-tidy-workaround/utils@v0.0.0-00010101000000-000000000000: invalid version: unknown revision 000000000000
+
+#### Alternative approaches
+
+
+## Other branches (alternatives
+
+- [with-replace-and-url-names](https://github.com/keilin-anz/go-work-mod-tidy-workaround/tree/with-replace-and-url-names) - attempt at using legit URL names and the `replace` directive inside individual `go.mod` files
+  - This is not an optimal solution since it requires a lot of manual updates, but figured it worth trying out
+  - it **did not work**
+    ```bash
+    go get github.com/keilin-anz/go-work-mod-tidy-workaround/exposed@with-replace-and-url-names
+    ```
+    and you get
+    ```
+    github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
+  	github.com/keilin-anz/go-work-mod-tidy-workaround/other: github.com/keilin-anz/go-work-mod-tidy-workaround/other@v0.0.0-00010101000000-000000000000: invalid version: unknown revision 000000000000
+  github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
+  	github.com/keilin-anz/go-work-mod-tidy-workaround/utils/math: github.com/keilin-anz/go-work-mod-tidy-workaround/utils@v0.0.0-00010101000000-000000000000: invalid version: unknown revision 000000000000
+    ```
+- [with-replace-in-go-work](https://github.com/keilin-anz/go-work-mod-tidy-workaround/tree/with-replace-in-go-work) - attempt at achieving similar to the above but by using `replace` directives in the `go.work` file
+  - Requires you to specify a version
+  - That version is then not recognised when importing from outside, eg. try:
+    ```bash
+    $ go get github.com/keilin-anz/go-work-mod-tidy-workaround/exposed@with-replace-in-go-work
+
+    go: downloading github.com/keilin-anz/go-work-mod-tidy-workaround v0.0.0-20221005105612-75af353f75f5
+    go: downloading github.com/keilin-anz/go-work-mod-tidy-workaround/exposed v0.0.0-20221005105612-75af353f75f5
+    github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
+    	github.com/keilin-anz/go-work-mod-tidy-workaround/other: cannot find module providing package github.com/keilin-anz/go-work-mod-tidy-workaround/other
+    github.com/keilin-anz/go-work-mod-tidy-workaround/exposed imports
+    	github.com/keilin-anz/go-work-mod-tidy-workaround/utils/math: cannot find module providing package github.com/keilin-anz/go-work-mod-tidy-workaround/utils/math
     ```
 
 ### Opinion
